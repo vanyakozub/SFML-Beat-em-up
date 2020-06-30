@@ -1,73 +1,141 @@
 #include <iostream>
-#include <SFML/Graphics.hpp>
+
+#include "Player.h"
+#include "Enemy.h"
 
 int main() {
-    std::cout << "Hello, World!" << std::endl;
     int width = 800;
     int height = 600;
-    sf::RenderWindow window(sf::VideoMode(width, height), "SFML works!");
-    //sf::CircleShape shape(100.f);
-    //shape.setFillColor(sf::Color::Green);
-    //sf::RectangleShape(25,36);
-    /*sf::Vector2 s = sf::Vector2<float>(100 +25, 35);    sf::RectangleShape rect(s);
-    rect.setFillColor(sf::Color::Red);*/
-    sf::Texture texture1;
+    sf::RenderWindow window(sf::VideoMode(width, height), "Street Fighter");
+    sf::Clock clock;
+    sf::Texture bg;
+    int rightSide = -1;
+    float enemystayingFrame = 0;
+    float stayingFrame = 0;
     float currentFrame = 0;
-    /*if (!texture1.loadFromFile("resources\\main_hero\\run.png", sf::IntRect(10, 10, 32, 32)))
-    {
-        // ошибка...
-    }*/
-    texture1.loadFromFile("resources\\main_hero\\run.png");
-    //texture1.loadFromFile("resources\\2.1.jpg");
-    //sf::RenderTexture(path_of_texture);
-    //sf::Texture texture = sf::Texture(path_of_texture.c_str());
-    sf::Sprite sprite;
-    sprite.setTexture(texture1);
-    sprite.setPosition(50, 100);
-    sprite.setTextureRect(sf::IntRect(0,0, 144, 144));
+    Player player;
+    Enemy enemy;
+    //player.playerSprite.setPosition(width/2, height/2);
+    bg.loadFromFile("resources\\main_hero\\background.png");
+    player.playerSprite.setTextureRect(sf::IntRect(0,0, 2*144, 2*144));
+    sf::Sprite background;
+    background.setTexture(bg);
+    bool isHit = false;
+    enum control{
 
+    };
     while (window.isOpen())
     {
+
+        float time = clock.getElapsedTime().asMicroseconds();
+        clock.restart();
+        time = time / 1800;
+
         sf::Event event;
         while (window.pollEvent(event))
         {
             if (event.type == sf::Event::Closed)
                 window.close();
         }
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-        {
-            sprite.move(-0.1, 0);
-            currentFrame+=0.01;
-            if(currentFrame>6)
-            {
-                currentFrame-=6;
+        enemystayingFrame += 0.01 * time;
+        if (enemystayingFrame > 5) {
+            enemystayingFrame -= 5;
+        }
+        if (rightSide == 1)
+            enemy.enemySprite.setTextureRect(
+                    sf::IntRect(2 * 144 * int(enemystayingFrame), 0, 2 * rightSide * 144, 2 * 144));
+        else
+            enemy.enemySprite.setTextureRect(
+                    sf::IntRect(2 * 144 * int(enemystayingFrame) + 2 * 144, 0, 2 * rightSide * 144, 2 * 144));
+        if(isHit) {
+            currentFrame += 0.03 * time;
+            if (currentFrame > 5) {
+                currentFrame -= 5;
+                isHit = false;
             }
-            std::cout << currentFrame<< std::endl;
-            sprite.setTextureRect(sf::IntRect(144*int(currentFrame),0,144,144));
-        }
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-        {
-            sprite.move(0.1, 0);
-            currentFrame+=0.01;
-            if(currentFrame>6)
-            {
-                currentFrame-=6;
+            if (isHit) {
+                if (rightSide == 1)
+                    player.playerSprite.setTextureRect(
+                            sf::IntRect(2 * 144 * int(currentFrame), 576 + 144 * 2, 2 * rightSide * 144, 2 * 144));
+                else
+                    player.playerSprite.setTextureRect(
+                            sf::IntRect(2 * 144 * int(currentFrame) + 2 * 144, 576 + 144 * 2, 2 * rightSide * 144,
+                                        2 * 144));
+
             }
-            std::cout << currentFrame<< std::endl;
-            sprite.setTextureRect(sf::IntRect(144*int(currentFrame)+144,0,-144,144));
+        } else {
+            stayingFrame += 0.01 * time;
+            if (stayingFrame > 5) {
+                stayingFrame -= 5;
+            }
+            if (rightSide == 1)
+                player.playerSprite.setTextureRect(
+                        sf::IntRect(2 * 144 * int(stayingFrame), 0, 2 * rightSide * 144, 2 * 144));
+            else
+                player.playerSprite.setTextureRect(
+                        sf::IntRect(2 * 144 * int(stayingFrame) + 2 * 144, 0, 2 * rightSide * 144, 2 * 144));
+
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+                if(rightSide== -1){
+                    rightSide = 1;
+                    currentFrame = 0;
+                }
+
+                player.posx -= 0.1;
+                enemy.posx += 0.1;
+                enemy.enemySprite.move(+0.1,0);
+                //player.playerSprite.move(-0.1*time, 0);
+                currentFrame += 0.01 * time;
+                if (currentFrame > 6) {
+                    currentFrame -= 6;
+                }
+                //std::cout << currentFrame<< std::endl;
+                player.playerSprite.setTextureRect(
+                        sf::IntRect(2 * 144 * int(currentFrame), 576, 2 * rightSide * 144, 2 * 144));
+            }
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+                if(rightSide==1){
+                    rightSide = -1;
+                    currentFrame = 0;
+                }
+
+                player.posx += 0.1;
+                enemy.posx -= 0.1;
+                enemy.enemySprite.move(-0.1,0);
+                //player.playerSprite.move(0.1*time, 0);
+                currentFrame += 0.01 * time;
+                if (currentFrame > 6) {
+                    currentFrame -= 6;
+                }
+                //std::cout << currentFrame<< std::endl;
+                player.playerSprite.setTextureRect(
+                        sf::IntRect(2 * 144 * int(currentFrame) + 2 * 144, 576, 2 * rightSide * 144, 2 * 144));
+
+
+            }
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+                player.playerSprite.move(0, -0.05);
+                player.posy -= 0.05;
+            }
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+                player.playerSprite.move(0, 0.05);
+                player.posy += 0.05;
+            }
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
+                isHit = true;
+                currentFrame = 0;
+            }
+            background.setTextureRect(sf::IntRect(player.posx - width / 2, 0, width, height));
+            int offset = player.playerSprite.getPosition().x - width / 2;
+            //player.playerSprite.setPosition(player.playerSprite.getPosition().x - width /2, player.playerSprite.getPosition().y);
+            //std::cout << background.getPosition().x << std::endl;
+            //background.setPosition(offset,0);
 
         }
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-        {
-            sprite.move(0, -0.1);
-        }
-
-
-
         window.clear();
-        //window.draw(shape);
-        //window.draw(rect);
-        window.draw(sprite);
+        window.draw(background);
+        window.draw(player.playerSprite);
+        window.draw(enemy.enemySprite);
         window.display();
     }
 
