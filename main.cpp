@@ -21,9 +21,7 @@ int main() {
     sf::Sprite background;
     background.setTexture(bg);
     bool isHit = false;
-    enum control{
-
-    };
+    
     while (window.isOpen())
     {
 
@@ -41,15 +39,38 @@ int main() {
         if (enemystayingFrame > 5) {
             enemystayingFrame -= 5;
         }
-        if (rightSide == 1)
-            enemy.enemySprite.setTextureRect(
-                    sf::IntRect(2 * 144 * int(enemystayingFrame), 0, 2 * rightSide * 144, 2 * 144));
-        else
-            enemy.enemySprite.setTextureRect(
-                    sf::IntRect(2 * 144 * int(enemystayingFrame) + 2 * 144, 0, 2 * rightSide * 144, 2 * 144));
+        if(enemy.getAlive()) {
+
+            if (rightSide == 1)
+                enemy.enemySprite.setTextureRect(
+                        sf::IntRect(2 * 144 * int(enemystayingFrame), 0, 2 * rightSide * 144, 2 * 144));
+            else
+                enemy.enemySprite.setTextureRect(
+                        sf::IntRect(2 * 144 * int(enemystayingFrame) + 2 * 144, 0, 2 * rightSide * 144, 2 * 144));
+        } else
+        {
+            enemy.enemySprite.setTextureRect(sf::IntRect (0, 2*144*4, 2 * 144, 2 * 144 ));
+        }
+
         if(isHit) {
             currentFrame += 0.03 * time;
+            std::cout << player.playerSprite.getPosition().x << "\t" << enemy.enemySprite.getPosition().x << "\t" << player.posy << "\t" << enemy.posy << std::endl;
+            if((currentFrame > 3 && currentFrame < 5)&&abs(player.playerSprite.getPosition().x - enemy.enemySprite.getPosition().x ) < 190 &&abs(player.posy - enemy.posy) <20)
+            {
+
+
+                if(enemy.getAlive())
+                enemy.enemySprite.setTextureRect(
+                        sf::IntRect(2 * 144 * int(currentFrame), 2*144, 2 * rightSide * 144, 2 * 144));
+                else {
+                    enemy.enemySprite.setTextureRect(sf::IntRect (0, 2*144*4, 2  * 144, 2 * 144 ));
+                }
+            }
             if (currentFrame > 5) {
+                enemy.setHP(enemy.getHP() - player.getDamage());
+                if(enemy.getHP() <=0) {
+                    enemy.setAlive(false);
+                }
                 currentFrame -= 5;
                 isHit = false;
             }
@@ -134,8 +155,9 @@ int main() {
         }
         window.clear();
         window.draw(background);
-        window.draw(player.playerSprite);
         window.draw(enemy.enemySprite);
+        window.draw(player.playerSprite);
+
         window.display();
     }
 

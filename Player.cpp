@@ -12,6 +12,7 @@ Player::Player()
     posy = 300;
     playerSprite.setPosition(150, 300);
     size = 2*144;
+    damage = 5;
 
 
 
@@ -22,5 +23,10 @@ int Player::getHP() {
 }
 
 Player::~Player() {
+
+}
+
+int Player::getDamage() {
+    return damage;
 
 }

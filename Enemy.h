@@ -10,7 +10,8 @@ class Enemy {
 private:
     sf::Texture enemyTexture;
     int size;
-    int hp = 100;
+    int hp = 10;
+    bool alive;
 
 public:
     Enemy();
@@ -19,6 +20,9 @@ public:
     float posx;
     float posy;
     int getHP();
+    void setHP(int newhp);
+    void setAlive(bool);
+    bool getAlive();
 };
 
 

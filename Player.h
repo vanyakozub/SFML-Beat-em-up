@@ -11,6 +11,7 @@ private:
     sf::Texture playerTexture;
     int size;
     int hp = 100;
+    int damage;
 
 public:
     Player();
@@ -19,6 +20,7 @@ public:
     float posx;
     float posy;
     int getHP();
+    int getDamage();
 
 
 };
